@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.renan.kotlinmpos.MainActivity">
+
+    <TextView
+        android:id="@+id/selectNumber"
+        android:text="Matrix M Dimensions (DxD)"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:layout_margin="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/selectNumber"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="-16dp"
+        android:gravity="center"
+        android:text="Select D"
+        android:textSize="18sp" />
+
+    <NumberPicker
+        android:id="@+id/numPicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/selectNumber"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="16dp"
+        android:visibility="visible" />
+
+    <Button
+        android:id="@+id/computeBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="185dp"
+        android:onClick="calc"
+        android:text="Compute" />
+
+    <TextView
+        android:id="@+id/execTimeTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="132dp"
+        android:text="Execution Time: 00:00.000"
+        android:textSize="18sp" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/radioGroup"
+        android:layout_width="337dp"
+        android:layout_height="47dp"
+        android:layout_centerInParent="true">
+
+        <RadioButton
+            android:id="@+id/mulRadioBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:text="Multiply (M * M)"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/addRadioBtn"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.466"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/addRadioBtn"
+            android:layout_width="128dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="32dp"
+            android:layout_marginStart="15dp"
+            android:checked="false"
+            android:text="Add (M + M)"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/mulRadioBtn"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.466" />
+    </android.support.constraint.ConstraintLayout>
+
+
+</RelativeLayout>

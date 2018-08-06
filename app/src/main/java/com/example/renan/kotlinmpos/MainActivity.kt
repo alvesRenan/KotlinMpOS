@@ -12,6 +12,7 @@ import br.ufc.mdcc.mpos.MposFramework
 import br.ufc.mdcc.mpos.config.Inject
 import br.ufc.mdcc.mpos.config.MposConfig
 import br.ufc.mdcc.mpos.config.ProfileNetwork
+import com.example.renan.kotlinmpos.R.id.numPicker
 
 import kotlinx.android.synthetic.main.activity_main.*
 import java.text.SimpleDateFormat
@@ -22,7 +23,8 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
 
     @Inject(MatrixImpl::class)
-    private lateinit var matrix: Matrix
+    //private lateinit var matrix: Matrix
+    private val matrix: Matrix = MatrixImpl()
 
     private val numbers = arrayOf("100", "200", "300", "400", "500", "600", "700", "800", "900", "1000")
 
@@ -30,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        matrix = MatrixImpl()
+        //matrix = MatrixImpl()
 
         // numberPicker configuration
         numPicker.minValue = 1

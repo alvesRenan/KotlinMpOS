@@ -1,1 +1,1 @@
-include ':app', ':mposapi-release'
+include ':app', ':mposapi-release', ':lib'

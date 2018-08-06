@@ -5,7 +5,7 @@ import java.util.*
 class MatrixImpl : Matrix {
 
     override fun random(m: Int, n: Int): Array<DoubleArray> {
-        val C: Array<DoubleArray> = Array(m, { DoubleArray(n) })
+        val C: Array<DoubleArray> = Array(m) { DoubleArray(n) }
 
         for (i in 0 until m)
             for (j in 0 until n)
@@ -15,7 +15,7 @@ class MatrixImpl : Matrix {
     }
 
     fun random(m: Int, n: Int, max: Int): Array<DoubleArray> {
-        val C: Array<DoubleArray> = Array(m, { DoubleArray(n) })
+        val C: Array<DoubleArray> = Array(m) { DoubleArray(n) }
 
         for (i in 0 until m)
             for (j in 0 until n)
@@ -28,7 +28,7 @@ class MatrixImpl : Matrix {
     fun transpose(A: Array<DoubleArray>): Array<DoubleArray> {
         val m = A.size
         val n = A[0].size
-        val C: Array<DoubleArray> = Array(n, { DoubleArray(m) })
+        val C: Array<DoubleArray> = Array(n) { DoubleArray(m) }
 
         for (i in 0 until m)
             for (j in 0 until n)
@@ -41,7 +41,7 @@ class MatrixImpl : Matrix {
     override fun add(A: Array<DoubleArray>, B: Array<DoubleArray>): Array<DoubleArray> {
         val m = A.size
         val n = A[0].size
-        val C: Array<DoubleArray> = Array(m, { DoubleArray(n) })
+        val C: Array<DoubleArray> = Array(m) { DoubleArray(n) }
 
         for (i in 0 until m)
             for (j in 0 until n)
@@ -60,7 +60,7 @@ class MatrixImpl : Matrix {
         if (nA != nB)
             throw RuntimeException("Illegal matrix dimensions")
 
-        val C: Array<DoubleArray> = Array(mA, { DoubleArray(nB) })
+        val C: Array<DoubleArray> = Array(mA) { DoubleArray(nB) }
 
         for (i in 0 until mA)
             for (j in 0 until nB)

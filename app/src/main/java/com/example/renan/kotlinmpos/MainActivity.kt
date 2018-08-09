@@ -22,9 +22,10 @@ import java.util.*
 @MposConfig(endpointSecondary = "210.0.2.2", profile = ProfileNetwork.LIGHT)
 class MainActivity : AppCompatActivity() {
 
-    @Inject(MatrixImpl::class)
-    //private lateinit var matrix: Matrix
-    private val matrix: Matrix = MatrixImpl()
+    private var extraSize: Int = 0
+    private lateinit var extraOperation: String
+
+    @Inject(MatrixImpl::class) private val matrix: Matrix = MatrixImpl()
 
     private val numbers = arrayOf("100", "200", "300", "400", "500", "600", "700", "800", "900", "1000")
 
@@ -50,16 +51,16 @@ class MainActivity : AppCompatActivity() {
                 MposFramework.getInstance().start(this, cloudlet)
             }
 
-            if (extras.containsKey("size")  && extras.containsKey("operation")) {
-                val size = extras.getInt("size")
-                val operation = extras.getString("operation")
+            if (extras.containsKey("size") && extras.containsKey("operation")) {
+                extraSize = extras.getInt("size")
+                extraOperation = extras.getString("operation")
 
-                if (operation.equals("mul", ignoreCase = true)) setMulOperation()
-                if (operation.equals("add", ignoreCase = true)) setAddOperation()
+                if (extraOperation.equals("mul", ignoreCase = true)) setMulOperation()
+                if (extraOperation.equals("add", ignoreCase = true)) setAddOperation()
 
                 computeBtn.performClick()
 
-                Log.d(this.packageName, "Extras: size = $size, operation = $operation")
+                Log.d(this.packageName, "Extras: size = $extraSize, operation = $extraOperation")
             } else {
                 Log.i(this.packageName, "No extras received.")
             }
@@ -68,7 +69,6 @@ class MainActivity : AppCompatActivity() {
         // choose operation in the interface
         mulRadioBtn.setOnClickListener { setMulOperation() }
         addRadioBtn.setOnClickListener { setAddOperation() }
-
     }
 
     override fun onDestroy() {
@@ -110,11 +110,6 @@ class MainActivity : AppCompatActivity() {
     /*
      * Radio Button options
      */
-//    public fun setAddOperation(view: View) {
-//        addRadioBtn.isChecked = true
-//        mulRadioBtn.isChecked = false
-//    }
-
     private fun setAddOperation() {
         addRadioBtn.isChecked = true
         mulRadioBtn.isChecked = false
@@ -141,10 +136,11 @@ class MainActivity : AppCompatActivity() {
 
     fun calc(view: View) {
         // Configure matrix dimension
-        val n = numbers[numPicker.value - 1].toInt()
-        Log.d(packageName, "Matrix dimension selected: $n")
-        // n = 100 + (n * 100)
-        // Log.d("DEBUG", "$n")
+        val sizeSelected = if (extraSize == 0) {
+            numbers[numPicker.value - 1].toInt()
+        } else {
+            extraSize
+        }
 
         // Get operation type
         val mustAdd = addRadioBtn.isChecked
@@ -153,7 +149,7 @@ class MainActivity : AppCompatActivity() {
         blockClickOnRadioButtons()
         resetExecTime()
 
-        CalcTask(n, mustAdd).execute()
+        CalcTask(sizeSelected, mustAdd).execute()
     }
 
     @SuppressLint("StaticFieldLeak")

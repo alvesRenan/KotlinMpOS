@@ -12,7 +12,6 @@ import br.ufc.mdcc.mpos.MposFramework
 import br.ufc.mdcc.mpos.config.Inject
 import br.ufc.mdcc.mpos.config.MposConfig
 import br.ufc.mdcc.mpos.config.ProfileNetwork
-import com.example.renan.kotlinmpos.R.id.numPicker
 
 import kotlinx.android.synthetic.main.activity_main.*
 import java.text.SimpleDateFormat
@@ -25,7 +24,8 @@ class MainActivity : AppCompatActivity() {
     private var extraSize: Int = 0
     private lateinit var extraOperation: String
 
-    @Inject(MatrixImpl::class) private val matrix: Matrix = MatrixImpl()
+    //@Inject(MatrixImpl::class) private val matrix: Matrix = MatrixImpl()
+    @Inject(MatrixImpl::class) private lateinit var matrix: Matrix
 
     private val numbers = arrayOf("100", "200", "300", "400", "500", "600", "700", "800", "900", "1000")
 
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //matrix = MatrixImpl()
+        matrix = MatrixImpl()
 
         // numberPicker configuration
         numPicker.minValue = 1
@@ -84,10 +84,12 @@ class MainActivity : AppCompatActivity() {
      * Execution Time option
      */
     @SuppressLint("SimpleDateFormat")
-    fun setExecTime(totalTime: Long) {
-        val date = Date(totalTime)
-        val df = SimpleDateFormat("mm:ss.SSS")
-        execTimeTxt.text = "Execution Time: ${df.format(date)}"
+    fun setExecTime(totalTime: Long?) {
+        totalTime?.let {
+            val date = Date(totalTime)
+            val df = SimpleDateFormat("mm:ss.SSS")
+            execTimeTxt.text = "Execution Time: ${df.format(date)}"
+        } ?: computeBtn.performClick()
     }
 
     private fun resetExecTime() {
@@ -157,7 +159,7 @@ class MainActivity : AppCompatActivity() {
         internal var dim: Int = 0
         internal var mustAdd: Boolean = false
         internal var initialTime: Long = 0
-        internal var totalTime: Long = 0
+        internal var totalTime: Long? = 0
 
         init {
             this.dim = dimension
@@ -166,19 +168,19 @@ class MainActivity : AppCompatActivity() {
 
         override fun doInBackground(vararg values: Void?): Void? {
             // Compute operation
-            lateinit var res: Array<DoubleArray> // needed only for debugging purposes
+            // lateinit var res: Array<DoubleArray> // needed only for debugging purposes
             initialTime = System.currentTimeMillis()
 
             publishProgress("Creating random matrix and calculating...")
-            val mat: Array<DoubleArray> = matrix.random(dim, dim)
+            val mat = matrix.random(dim, dim)
 
             val init: Long = System.nanoTime()
 
             val op = if (mustAdd) {
-                var res = matrix.add(mat, mat)
+                matrix.add(mat, mat)
                 "Add"
             } else {
-                var res = matrix.multiply(mat, mat)
+                matrix.multiply(mat, mat)
                 "Mul"
             }
             val execTime = System.nanoTime() - init

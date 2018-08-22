@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
     private var extraSize: Int = 0
     private lateinit var extraOperation: String
 
-    //@Inject(MatrixImpl::class) private val matrix: Matrix = MatrixImpl()
     @Inject(MatrixImpl::class) private lateinit var matrix: Matrix
 
     private val numbers = arrayOf("100", "200", "300", "400", "500", "600", "700", "800", "900", "1000")
@@ -176,13 +175,19 @@ class MainActivity : AppCompatActivity() {
 
             val init: Long = System.nanoTime()
 
-            val op = if (mustAdd) {
-                matrix.add(mat, mat)
-                "Add"
-            } else {
-                matrix.multiply(mat, mat)
-                "Mul"
+            val op = try {
+                if (mustAdd) {
+                    matrix.add(mat, mat)
+                    "Add"
+                } else {
+                    matrix.multiply(mat, mat)
+                    "Mul"
+                }
+            } catch (e: NullPointerException) {
+                Log.e("MATRIX_CRASH", e.printStackTrace().toString())
+                "Error"
             }
+
             val execTime = System.nanoTime() - init
 
             Log.d("Result", "Operation = $op, Dimension = $dim, Time = $execTime")

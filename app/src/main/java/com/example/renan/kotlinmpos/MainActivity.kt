@@ -152,7 +152,6 @@ class MainActivity : AppCompatActivity() {
         blockClickOnRadioButtons()
         resetExecTime()
 
-//        CalcTask(sizeSelected, mustAdd).execute()
         doAsync {
             val initialTime = System.currentTimeMillis()
             val mat = matrix.random(sizeSelected, sizeSelected)
@@ -183,59 +182,4 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
-//    @SuppressLint("StaticFieldLeak")
-//    private inner class CalcTask(dimension: Int, b: Boolean) : AsyncTask<Void, String, Void>() {
-//        internal var dim: Int = 0
-//        internal var mustAdd: Boolean = false
-//        internal var initialTime: Long = 0
-//        internal var totalTime: Long = 0
-//        internal var operation: String? = null
-//
-//        init {
-//            this.dim = dimension
-//            this.mustAdd = b
-//        }
-//
-//        override fun doInBackground(vararg values: Void?): Void? {
-//            // Compute operation
-//            // lateinit var res: Array<DoubleArray> // needed only for debugging purposes
-//            initialTime = System.currentTimeMillis()
-//
-//            publishProgress("Creating random matrix and calculating...")
-//            val mat = matrix.random(dim, dim)
-//
-//            val init: Long = System.nanoTime()
-//
-//            operation = try {
-//                if (mustAdd) {
-//                    matrix.add(mat, mat)
-//                    "Add"
-//                } else {
-//                    matrix.multiply(mat, mat)
-//                    "Mul"
-//                }
-//            } catch (e: NullPointerException) {
-//                Log.e("MATRIX_CRASH", "${e.printStackTrace()}")
-//                null
-//            }
-//
-//            val execTime = System.nanoTime() - init
-//
-//            Log.d("Result", "Operation = $operation, Dimension = $dim, Time = $execTime")
-//            totalTime = System.currentTimeMillis() - initialTime
-//            return null
-//        }
-//
-//        override fun onProgressUpdate(vararg progress: String?) {
-//            Toast.makeText(applicationContext, progress[0], Toast.LENGTH_SHORT).show()
-//        }
-//
-//        override fun onPostExecute(no: Void?) {
-//            enableButton()
-//            unblockClickOnRadioButtons()
-//            setExecTime(totalTime, operation)
-//        }
-//    }
-
 }

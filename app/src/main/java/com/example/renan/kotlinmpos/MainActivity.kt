@@ -14,6 +14,8 @@ import br.ufc.mdcc.mpos.config.MposConfig
 import br.ufc.mdcc.mpos.config.ProfileNetwork
 
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -82,9 +84,9 @@ class MainActivity : AppCompatActivity() {
     /*
      * Execution Time option
      */
-    @SuppressLint("SimpleDateFormat")
-    fun setExecTime(totalTime: Long?) {
-        totalTime?.let {
+    @SuppressLint("SimpleDateFormat", "SetTextI18n")
+    fun setExecTime(totalTime: Long, operation: String?) {
+        operation?.let {
             val date = Date(totalTime)
             val df = SimpleDateFormat("mm:ss.SSS")
             execTimeTxt.text = "Execution Time: ${df.format(date)}"
@@ -150,32 +152,13 @@ class MainActivity : AppCompatActivity() {
         blockClickOnRadioButtons()
         resetExecTime()
 
-        CalcTask(sizeSelected, mustAdd).execute()
-    }
+//        CalcTask(sizeSelected, mustAdd).execute()
+        doAsync {
+            val initialTime = System.currentTimeMillis()
+            val mat = matrix.random(sizeSelected, sizeSelected)
+            val init = System.nanoTime()
 
-    @SuppressLint("StaticFieldLeak")
-    private inner class CalcTask(dimension: Int, b: Boolean) : AsyncTask<Void, String, Void>() {
-        internal var dim: Int = 0
-        internal var mustAdd: Boolean = false
-        internal var initialTime: Long = 0
-        internal var totalTime: Long? = 0
-
-        init {
-            this.dim = dimension
-            this.mustAdd = b
-        }
-
-        override fun doInBackground(vararg values: Void?): Void? {
-            // Compute operation
-            // lateinit var res: Array<DoubleArray> // needed only for debugging purposes
-            initialTime = System.currentTimeMillis()
-
-            publishProgress("Creating random matrix and calculating...")
-            val mat = matrix.random(dim, dim)
-
-            val init: Long = System.nanoTime()
-
-            val op = try {
+            val operation = try {
                 if (mustAdd) {
                     matrix.add(mat, mat)
                     "Add"
@@ -184,26 +167,75 @@ class MainActivity : AppCompatActivity() {
                     "Mul"
                 }
             } catch (e: NullPointerException) {
-                Log.e("MATRIX_CRASH", e.printStackTrace().toString())
-                "Error"
+                Log.e("MATRIX_CRASH", "${e.printStackTrace()}")
+                null
             }
 
             val execTime = System.nanoTime() - init
 
-            Log.d("Result", "Operation = $op, Dimension = $dim, Time = $execTime")
-            totalTime = System.currentTimeMillis() - initialTime
-            return null
-        }
+            Log.d("Result", "Operation = $operation, Dimension = $sizeSelected, Time = $execTime")
+            val totalTime = System.currentTimeMillis() - initialTime
 
-        override fun onProgressUpdate(vararg progress: String?) {
-            Toast.makeText(applicationContext, progress[0], Toast.LENGTH_SHORT).show()
-        }
-
-        override fun onPostExecute(no: Void?) {
-            enableButton()
-            unblockClickOnRadioButtons()
-            setExecTime(totalTime)
+            uiThread {
+                enableButton()
+                unblockClickOnRadioButtons()
+                setExecTime(totalTime, operation)
+            }
         }
     }
+
+//    @SuppressLint("StaticFieldLeak")
+//    private inner class CalcTask(dimension: Int, b: Boolean) : AsyncTask<Void, String, Void>() {
+//        internal var dim: Int = 0
+//        internal var mustAdd: Boolean = false
+//        internal var initialTime: Long = 0
+//        internal var totalTime: Long = 0
+//        internal var operation: String? = null
+//
+//        init {
+//            this.dim = dimension
+//            this.mustAdd = b
+//        }
+//
+//        override fun doInBackground(vararg values: Void?): Void? {
+//            // Compute operation
+//            // lateinit var res: Array<DoubleArray> // needed only for debugging purposes
+//            initialTime = System.currentTimeMillis()
+//
+//            publishProgress("Creating random matrix and calculating...")
+//            val mat = matrix.random(dim, dim)
+//
+//            val init: Long = System.nanoTime()
+//
+//            operation = try {
+//                if (mustAdd) {
+//                    matrix.add(mat, mat)
+//                    "Add"
+//                } else {
+//                    matrix.multiply(mat, mat)
+//                    "Mul"
+//                }
+//            } catch (e: NullPointerException) {
+//                Log.e("MATRIX_CRASH", "${e.printStackTrace()}")
+//                null
+//            }
+//
+//            val execTime = System.nanoTime() - init
+//
+//            Log.d("Result", "Operation = $operation, Dimension = $dim, Time = $execTime")
+//            totalTime = System.currentTimeMillis() - initialTime
+//            return null
+//        }
+//
+//        override fun onProgressUpdate(vararg progress: String?) {
+//            Toast.makeText(applicationContext, progress[0], Toast.LENGTH_SHORT).show()
+//        }
+//
+//        override fun onPostExecute(no: Void?) {
+//            enableButton()
+//            unblockClickOnRadioButtons()
+//            setExecTime(totalTime, operation)
+//        }
+//    }
 
 }

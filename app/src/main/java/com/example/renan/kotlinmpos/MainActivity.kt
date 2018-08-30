@@ -1,12 +1,10 @@
 package com.example.renan.kotlinmpos
 
 import android.annotation.SuppressLint
-import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 
 import br.ufc.mdcc.mpos.MposFramework
 import br.ufc.mdcc.mpos.config.Inject
@@ -15,6 +13,7 @@ import br.ufc.mdcc.mpos.config.ProfileNetwork
 
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.toast
 import org.jetbrains.anko.uiThread
 import java.text.SimpleDateFormat
 import java.util.*
@@ -154,9 +153,13 @@ class MainActivity : AppCompatActivity() {
 
         doAsync {
             val initialTime = System.currentTimeMillis()
-            val mat = matrix.random(sizeSelected, sizeSelected)
-            val init = System.nanoTime()
 
+            uiThread {
+                toast("Creating random matrix and calculating...")
+            }
+            val mat = matrix.random(sizeSelected, sizeSelected)
+
+            val init = System.nanoTime()
             val operation = try {
                 if (mustAdd) {
                     matrix.add(mat, mat)

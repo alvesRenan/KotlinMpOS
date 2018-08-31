@@ -18,12 +18,15 @@ import org.jetbrains.anko.uiThread
 import java.text.SimpleDateFormat
 import java.util.*
 
+@SuppressLint("SimpleDateFormat", "SetTextI18n")
 @SuppressWarnings("depreciation")
 @MposConfig(endpointSecondary = "210.0.2.2", profile = ProfileNetwork.LIGHT)
 class MainActivity : AppCompatActivity() {
 
     private var extraSize: Int = 0
     private lateinit var extraOperation: String
+
+    private var numberOfErrors = 0
 
     @Inject(MatrixImpl::class) private lateinit var matrix: Matrix
 
@@ -83,8 +86,8 @@ class MainActivity : AppCompatActivity() {
     /*
      * Execution Time option
      */
-    @SuppressLint("SimpleDateFormat", "SetTextI18n")
-    fun setExecTime(totalTime: Long, operation: String?) {
+
+    private fun setExecTime(totalTime: Long, operation: String?) {
         operation?.let {
             val date = Date(totalTime)
             val df = SimpleDateFormat("mm:ss.SSS")
@@ -104,7 +107,7 @@ class MainActivity : AppCompatActivity() {
         computeBtn.isClickable = false
     }
 
-    fun enableButton() {
+    private fun enableButton() {
         computeBtn.text = "Compute"
         computeBtn.isClickable = true
     }
@@ -127,7 +130,7 @@ class MainActivity : AppCompatActivity() {
         mulRadioBtn.isClickable = false
     }
 
-    fun unblockClickOnRadioButtons() {
+    private fun unblockClickOnRadioButtons() {
         addRadioBtn.isClickable = true
         mulRadioBtn.isClickable = true
     }
@@ -170,13 +173,17 @@ class MainActivity : AppCompatActivity() {
                 }
             } catch (e: NullPointerException) {
                 Log.e("MATRIX_CRASH", "${e.printStackTrace()}")
+                numberOfErrors += 1
                 null
             }
 
             val execTime = System.nanoTime() - init
+            val totalTime = System.currentTimeMillis() - initialTime
 
             Log.d("Result", "Operation = $operation, Dimension = $sizeSelected, Time = $execTime")
-            val totalTime = System.currentTimeMillis() - initialTime
+
+            // if operation is null, then log the number of errors
+            operation ?: Log.e("An Error Occurred!", "Total number so  far is: $numberOfErrors")
 
             uiThread {
                 enableButton()

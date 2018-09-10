@@ -1,6 +1,10 @@
 package com.example.renan.kotlinmpos
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -20,11 +24,12 @@ import java.util.*
 
 @SuppressLint("SimpleDateFormat", "SetTextI18n")
 @SuppressWarnings("depreciation")
-@MposConfig(endpointSecondary = "210.0.2.2", profile = ProfileNetwork.LIGHT)
+@MposConfig(profile = ProfileNetwork.LIGHT)
 class MainActivity : AppCompatActivity() {
 
     private var extraSize: Int = 0
     private lateinit var extraOperation: String
+    private lateinit var receiver: BroadcastReceiver
 
     private var numberOfErrors = 0
 
@@ -36,6 +41,28 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Create the BroadcastReceiver object
+        receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                intent?.let {
+                    extraSize = intent.getIntExtra("size", 0)
+                    extraOperation = intent.getStringExtra("operation")
+                }
+
+                if (extraOperation.equals("mul", true)) setMulOperation()
+                else setAddOperation()
+
+                computeBtn.performClick()
+            }
+        }
+
+        // Filter for the BroadcastReceiver
+        val filter = IntentFilter()
+        // Name of the action
+        filter.addAction("com.example.renan.kotlinmpos.EXTRAS")
+        // Set the receiver
+        registerReceiver(receiver, filter)
+
         matrix = MatrixImpl()
 
         // numberPicker configuration
@@ -44,8 +71,9 @@ class MainActivity : AppCompatActivity() {
         numPicker.displayedValues = numbers
         numPicker.value = 1
 
-        // get matrix dimension and operation through intent
+        // get matrixTest dimension and operation through intent
         val extras = intent.extras
+
         if (extras != null) {
             if (extras.containsKey("cloudlet")) {
                 val cloudlet = extras.getString("cloudlet")
@@ -53,20 +81,8 @@ class MainActivity : AppCompatActivity() {
 
                 MposFramework.getInstance().start(this, cloudlet)
             }
-
-            if (extras.containsKey("size") && extras.containsKey("operation")) {
-                extraSize = extras.getInt("size")
-                extraOperation = extras.getString("operation")
-
-                if (extraOperation.equals("mul", ignoreCase = true)) setMulOperation()
-                if (extraOperation.equals("add", ignoreCase = true)) setAddOperation()
-
-                computeBtn.performClick()
-
-                Log.d(this.packageName, "Extras: size = $extraSize, operation = $extraOperation")
-            } else {
-                Log.i(this.packageName, "No extras received.")
-            }
+        } else {
+            Log.i("EXTRAS", "No extras received.")
         }
 
         // choose operation in the interface
@@ -76,6 +92,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+
+        // Destroy the receiver
+        unregisterReceiver(receiver)
+
         try {
             MposFramework.getInstance().stop()
         } catch (e: NullPointerException) {
@@ -140,7 +160,7 @@ class MainActivity : AppCompatActivity() {
      */
 
     fun calc(view: View) {
-        // Configure matrix dimension
+        // Configure matrixTest dimension
         val sizeSelected = if (extraSize == 0) {
             numbers[numPicker.value - 1].toInt()
         } else {

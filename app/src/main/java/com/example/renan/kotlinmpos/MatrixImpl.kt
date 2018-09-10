@@ -2,7 +2,7 @@ package com.example.renan.kotlinmpos
 
 import java.util.*
 
-class MatrixImpl : Matrix {
+class MatrixImpl : Matrix{
 
     override fun random(m: Int, n: Int): Array<DoubleArray> {
         val C: Array<DoubleArray> = Array(m) { DoubleArray(n) }
@@ -58,7 +58,7 @@ class MatrixImpl : Matrix {
         val nB = B[0].size
 
         if (nA != nB)
-            throw RuntimeException("Illegal matrix dimensions")
+            throw RuntimeException("Illegal matrixTest dimensions")
 
         val C: Array<DoubleArray> = Array(mA) { DoubleArray(nB) }
 
